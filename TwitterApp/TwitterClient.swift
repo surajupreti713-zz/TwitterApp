@@ -16,19 +16,21 @@ class TwitterClient: BDBOAuth1SessionManager {
     var loginFailure: ((NSError) -> ())?
     
     
-    func currentAccount() {
+    func currentAccount(success: @escaping (User) -> (), failure: @escaping (NSError) -> ()) {
         get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task: URLSessionDataTask, response: Any?) in
             //print("account: \(response)")
             let userDictionary = response as! NSDictionary
             let user = User(dictionary: userDictionary)
+            
+            success(user)
             
             print("name: \(user.name)")
             print("screenname: \(user.screenname)")
             print("profile url: \(user.profileUrl)")
             print("description: \(user.tagline)")
             
-        }, failure: { (task: URLSessionDataTask?, error: Error?) in
-            print("error")
+        }, failure: { (task: URLSessionDataTask?, error: Error) in    /////////////////////////
+            failure(error as NSError)
         })
     }
     
@@ -53,13 +55,18 @@ class TwitterClient: BDBOAuth1SessionManager {
     func handleOpenUrl(url: NSURL) {
         let requestToken = BDBOAuth1Credential(queryString: url.query)
         fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken, success: { (accessToken: BDBOAuth1Credential?) in
-            print("I got the access token")
+            //print("I got the access token")
             
-            self.loginSuccess?()
+            self.currentAccount(success: { (user) in
+                User.currentUser = user
+                self.loginSuccess?()
+            }, failure: { (error) in
+                self.loginFailure?(error as! NSError)
+            })
             
-        }, failure: { (error: Error?) in
-            print("error: \(error?.localizedDescription)")
-            self.loginFailure?(error as! NSError)
+        }, failure: { (Error) in
+            print("error: \(Error?.localizedDescription)")
+            self.loginFailure?(Error as! NSError)
         })
 
     }
