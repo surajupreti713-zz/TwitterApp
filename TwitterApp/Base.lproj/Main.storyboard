@@ -64,7 +64,18 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     </view>
-                    <navigationItem key="navigationItem" id="jeg-28-WZ2"/>
+                    <navigationItem key="navigationItem" id="jeg-28-WZ2">
+                        <barButtonItem key="leftBarButtonItem" style="plain" id="x5Z-eJ-vU4">
+                            <button key="customView" opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" id="G47-Q1-TOE">
+                                <rect key="frame" x="16" y="7" width="83" height="30"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Logout"/>
+                                <connections>
+                                    <action selector="onLogoutButton:" destination="5qN-RY-ysd" eventType="touchUpInside" id="bdu-ym-x3G"/>
+                                </connections>
+                            </button>
+                        </barButtonItem>
+                    </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="2G0-ld-HSp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
