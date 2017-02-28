@@ -57,6 +57,7 @@ class User: NSObject {
                 defaults.removeObject(forKey: "currentUserData")
             }
             defaults.synchronize()
-        }    }
+        }
+    }
 
 }

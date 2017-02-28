@@ -18,8 +18,6 @@ class LoginViewController: UIViewController {
         }){ (error: NSError) -> () in
             print("Error:\(error.localizedDescription)")
         }
-        
-        
     }
     
     
