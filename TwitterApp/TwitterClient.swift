@@ -17,35 +17,6 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     static let sharedInstance = TwitterClient(baseURL: NSURL(string: "https://api.twitter.com")! as URL!, consumerKey: "ZaVMaIwP0L2NHNuukpuGCK27j", consumerSecret: "147HztnlTzfvXffsVx35TqR2FVWVMlxC6CoMem2hL7fIIHdMCP")
     
-    func homeTimeLine(count: Int, success: @escaping ([Tweet]) -> (), failure: (NSError) -> ()){
-        get("1.1/statuses/home_timeline.json", parameters: ["count": count], progress: nil, success: { (task, response) in
-            let dictionaries = response as! [NSDictionary]
-            let tweets = Tweet.tweetsWithArray(dictionaries: dictionaries)
-            success(tweets)
-        }, failure: { (task, error) in
-        })
-    }
-    
-    
-    func currentAccount(success: @escaping (User) -> (), failure: @escaping (NSError) -> ()) {
-        get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task, response)  -> Void in
-            print("account: \(response)")
-            
-            let userDictionary = response as! NSDictionary
-            let user = User(dictionary: userDictionary)
-            
-            success(user)
-            
-            print("name: \(user.name)")
-            print("screenname: \(user.screenname)")
-            print("profile url: \(user.profileUrl)")
-            print("description: \(user.tagline)")
-            
-        }, failure: { (task: URLSessionDataTask?, error: Error) in    /////////////////////////
-            failure(error as NSError)
-        })
-    }
-    
     func login(success: @escaping () -> (), failure: @escaping (NSError) -> ()) {
         loginSuccess = success
         loginFailure = failure
@@ -64,13 +35,6 @@ class TwitterClient: BDBOAuth1SessionManager {
         })
     }
     
-    func logout() {
-        User.currentUser = nil
-        deauthorize()
-        NotificationCenter.default.post(name: NSNotification.Name(rawValue: User.userDidLogoutNotification), object: nil)
-    }
-
-    
     func handleOpenUrl(url: NSURL) {
         let requestToken = BDBOAuth1Credential(queryString: url.query)
         fetchAccessToken(withPath: "oauth/access_token", method: "POST", requestToken: requestToken!, success: { (accessToken: BDBOAuth1Credential?) in
@@ -88,6 +52,40 @@ class TwitterClient: BDBOAuth1SessionManager {
             self.loginFailure?(Error as! NSError)
         })
         
+    }
+    
+    func logout() {
+        User.currentUser = nil
+        deauthorize()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: User.userDidLogoutNotification), object: nil)
+    }
+    
+    func homeTimeLine(count: Int, success: @escaping ([Tweet]) -> (), failure: (NSError) -> ()){
+        get("1.1/statuses/home_timeline.json", parameters: ["count": count], progress: nil, success: { (task, response) in
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.tweetsWithArray(dictionaries: dictionaries)
+            success(tweets)
+        }, failure: { (task, error) in
+        })
+    }
+    
+    func currentAccount(success: @escaping (User) -> (), failure: @escaping (NSError) -> ()) {
+        get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task, response)  -> Void in
+            print("account: \(response)")
+            
+            let userDictionary = response as! NSDictionary
+            let user = User(dictionary: userDictionary)
+            
+            success(user)
+            
+            print("name: \(user.name)")
+            print("screenname: \(user.screenname)")
+            print("profile url: \(user.profileUrl)")
+            print("description: \(user.tagline)")
+            
+        }, failure: { (task: URLSessionDataTask?, error: Error) in    /////////////////////////
+            failure(error as NSError)
+        })
     }
     
     static func timeElapsed(timestamp: Date) -> String {
@@ -119,6 +117,7 @@ class TwitterClient: BDBOAuth1SessionManager {
             failure(error)
         })
     }
+    
     func favorite(tweet: Tweet, success: @escaping (Tweet) -> (), failure: @escaping (Error) -> ()) {
         post("1.1/favorites/create.json", parameters: ["id": tweet.idString!], progress: nil, success: { (task: URLSessionDataTask, response: Any?) -> Void in
             let dictionary = response as? NSDictionary
@@ -168,7 +167,4 @@ class TwitterClient: BDBOAuth1SessionManager {
             
         })
     }
-    
-    
-    
 }
