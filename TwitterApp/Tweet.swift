@@ -21,7 +21,7 @@ class Tweet: NSObject {
     var retweet: Bool?
     var retweet_status: Tweet?
     var currentUserRetweet: Tweet?
-     var idString: String?
+    var idString: String?
     
     init(dictionary: NSDictionary) {
         text = dictionary["text"] as? String as NSString?
