@@ -11,7 +11,9 @@ import UIKit
 class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     var tweets: [Tweet]!
-    var count = 30
+    var coun = 30
+    
+    var index = 0
     
     @IBOutlet var tableView: UITableView!
     
@@ -24,12 +26,13 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         navigationItem.titleView?.backgroundColor = .blue
         
-        TwitterClient.sharedInstance?.homeTimeLine(count: count, success: { (tweets: [Tweet]) -> () in
+        TwitterClient.sharedInstance?.homeTimeLine(count: coun, success: { (tweets: [Tweet]) -> () in
             self.tweets = tweets
             for tweet in tweets{
-                print(tweet.text)
+                //print(tweet.text)
                 self.tableView.reloadData()
             }
+            //print(self.tweets[3].text)
         }, failure: { (error: NSError) in
             print(error.localizedDescription)
         })
@@ -46,7 +49,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         let tweet = tweets?[(indexPath?.row)!]
         if (tweet?.retweet!)! {
             TwitterClient.sharedInstance?.unretweet(tweet: tweet!, success: { (tweet: Tweet) -> () in
-                TwitterClient.sharedInstance?.homeTimeLine(count: self.count, success: { (tweets: [Tweet]) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
                     self.tweets = tweets
                     self.tableView.reloadData()
                 }, failure: { (error: Error) -> () in
@@ -58,7 +61,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             })
         } else {
             TwitterClient.sharedInstance?.retweet(tweet: tweet!, success: { (tweet: Tweet) -> () in
-                TwitterClient.sharedInstance?.homeTimeLine(count: self.count, success: { (tweets: [Tweet]) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
                     self.tweets = tweets
                     self.tableView.reloadData()
                 }, failure: { (error: Error) -> () in
@@ -80,7 +83,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
         
         if (tweet?.favorite!)! {
             TwitterClient.sharedInstance?.unfavorite(tweet: tweet!, success: { (tweet: Tweet) -> () in
-                TwitterClient.sharedInstance?.homeTimeLine(count: self.count, success: { (tweets: [Tweet]) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
                     self.tweets = tweets
                     self.tableView.reloadData()
                 }, failure: { (error: Error) -> () in
@@ -92,7 +95,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
             })
         } else {
             TwitterClient.sharedInstance?.favorite(tweet: tweet!, success: { (tweet: Tweet) -> () in
-                TwitterClient.sharedInstance?.homeTimeLine(count: self.count, success: { (tweets: [Tweet]) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
                     self.tweets = tweets
                     self.tableView.reloadData()
                 }, failure: { (error: Error) -> () in
@@ -107,8 +110,8 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if tweets != nil {
-            return tweets!.count
+        if let tweets = tweets {
+            return tweets.count
         } else{
             return 0
         }
@@ -116,8 +119,35 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath) as! TweetViewCell
-        cell.tweet = tweets[indexPath.row]
+        cell.tweet = tweets?[indexPath.row]
+        index = indexPath.row
         return cell
+    }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        
+        let indexPath = tableView.indexPathForSelectedRow
+        let index = indexPath?.row
+        print(index)
+        let viewController = segue.destination as! TweetDetailsViewController
+        viewController.tweet = tweets![index!]
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        if self.tweets != nil {
+            self.tableView.reloadData()
+        }
+    }
+    
+    func backToHome() {
+        print("yes, I am back to home")
+        dismiss(animated: true, completion: nil)
+    }
+    
+    func replyTheTweet() {
+        print("I will reply the tweet")
     }
     
     override func didReceiveMemoryWarning() {
