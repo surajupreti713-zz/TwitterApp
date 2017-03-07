@@ -57,7 +57,7 @@ The following **required** functionality is completed:
    - [√] Contains the user header view
    - [√] Contains a section with the users basic stats: # tweets, # following, # followers
 - [ ] Home Timeline: Tapping on a user image should bring up that user's profile page
-- [ ] Compose Page: User can compose a new tweet by tapping on a compose button.
+- [√] Compose Page: User can compose a new tweet by tapping on a compose button.
 
 The following **optional** features are implemented:
 
