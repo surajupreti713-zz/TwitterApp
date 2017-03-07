@@ -23,8 +23,13 @@ class TweetDetailsViewController: UIViewController {
     @IBOutlet weak var retweetLabel: UILabel!
     @IBOutlet weak var favoriteLabel: UILabel!
     
+    @IBOutlet weak var retweetOutlet: UIButton!
+    
+    @IBOutlet weak var favoriteOutlet: UIButton!
+    
     //weak var delegate: TweetDetailsViewControllerDelegate?
     var tweet: Tweet?
+    var coun = 30
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,12 +47,64 @@ class TweetDetailsViewController: UIViewController {
     }
     
     @IBAction func retweet(_ sender: Any) {
-        
+        if (tweet?.retweet!)! {
+            TwitterClient.sharedInstance?.unretweet(tweet: tweet!, success: { (tweet: Tweet) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
+                    //self.tweets = tweets
+                    //self.tableView.reloadData()
+                }, failure: { (error: Error) -> () in
+                    print(error.localizedDescription)
+                })
+                print("unretweeted")
+            }, failure: { (error: Error) -> () in
+                print(error.localizedDescription)
+            })
+        } else {
+            TwitterClient.sharedInstance?.retweet(tweet: tweet!, success: { (tweet: Tweet) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
+                    //self.tweets = tweets
+                    //self.tableView.reloadData()
+                }, failure: { (error: Error) -> () in
+                    print(error.localizedDescription)
+                })
+                print("retweeted")
+                self.retweetOutlet.setImage(UIImage(named: "retweet-icon-green"), for: .normal)
+                self.retweetLabel.text = "\(tweet.retweetCount)"
+            }, failure: { (error: Error) -> () in
+                print(error.localizedDescription)
+            })
+        }
     }
     
     
     @IBAction func favorite(_ sender: Any) {
-        
+        if (tweet?.favorite!)! {
+            TwitterClient.sharedInstance?.unfavorite(tweet: tweet!, success: { (tweet: Tweet) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
+                    //self.tweets = tweets
+                    //self.tableView.reloadData()
+                }, failure: { (error: Error) -> () in
+                    print(error.localizedDescription)
+                })
+                print("unfavorited")
+            }, failure: { (error: Error) -> () in
+                print(error.localizedDescription)
+            })
+        } else {
+            TwitterClient.sharedInstance?.favorite(tweet: tweet!, success: { (tweet: Tweet) -> () in
+                TwitterClient.sharedInstance?.homeTimeLine(count: self.coun, success: { (tweets: [Tweet]) -> () in
+                    //self.tweets = tweets
+                    //self.tableView.reloadData()
+                }, failure: { (error: Error) -> () in
+                    print(error.localizedDescription)
+                })
+                print("favorited")
+                self.favoriteOutlet.setImage(UIImage(named: "favor-icon-1"), for: .normal)
+                self.favoriteLabel.text = "\(tweet.favoritesCount)"
+            }, failure: { (error: Error) -> () in
+                print(error.localizedDescription)
+            })
+        }
     }
     
 
