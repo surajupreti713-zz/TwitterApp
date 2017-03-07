@@ -67,6 +67,12 @@ class ProfileViewController: UIViewController, UITableViewDelegate, UITableViewD
         dismiss(animated: true, completion: nil)
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "composeSegue" {
+            print("composing tweet")
+        }
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let tweets = tweets {
             return tweets.count
