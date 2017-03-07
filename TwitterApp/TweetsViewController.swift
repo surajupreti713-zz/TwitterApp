@@ -14,6 +14,7 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     var coun = 30
     
     var index = 0
+    var user: User?
     
     @IBOutlet var tableView: UITableView!
     
@@ -33,6 +34,13 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
                 self.tableView.reloadData()
             }
             //print(self.tweets[3].text)
+        }, failure: { (error: NSError) in
+            print(error.localizedDescription)
+        })
+        
+        //working for the ProfileViewController
+        TwitterClient.sharedInstance?.currentAccount(success: { (user: User) in
+            self.user = user
         }, failure: { (error: NSError) in
             print(error.localizedDescription)
         })
@@ -126,12 +134,19 @@ class TweetsViewController: UIViewController, UITableViewDelegate, UITableViewDa
     
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "detailsSegue" {
+            let indexPath = tableView.indexPathForSelectedRow
+            let index = indexPath?.row
+            print(index)
+            let viewController = segue.destination as! TweetDetailsViewController
+            viewController.tweet = tweets![index!]
+        }
         
-        let indexPath = tableView.indexPathForSelectedRow
-        let index = indexPath?.row
-        print(index)
-        let viewController = segue.destination as! TweetDetailsViewController
-        viewController.tweet = tweets![index!]
+        else if segue.identifier == "profileSegue" {
+            let navigationController = segue.destination as! UINavigationController
+            let viewcontroller = navigationController.topViewController as! ProfileViewController
+            viewcontroller.user = self.user
+        }
         
     }
     
