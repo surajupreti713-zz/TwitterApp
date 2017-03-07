@@ -8,7 +8,7 @@
 
 import UIKit
 
-class TweetDetailViewCell: UITableViewCell {
+class ProfileTimelineCell: UITableViewCell {
     
     @IBOutlet weak var ImageView: UIImageView!
     @IBOutlet weak var nameLabel: UILabel!
@@ -27,8 +27,8 @@ class TweetDetailViewCell: UITableViewCell {
             if let timestamp = tweet.timestamp {
                 timeLabel.text = TwitterClient.timeElapsed(timestamp: timestamp as Date)
             }
-            retweetLabel.text = String(tweet.retweetCount)
-            favoriteLabel.text = String(tweet.favoritesCount)
+            //retweetLabel.text = String(tweet.retweetCount)
+            //favoriteLabel.text = String(tweet.favoritesCount)
         }
     }
 

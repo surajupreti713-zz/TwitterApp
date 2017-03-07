@@ -71,20 +71,24 @@ class TwitterClient: BDBOAuth1SessionManager {
     
     func currentAccount(success: @escaping (User) -> (), failure: @escaping (NSError) -> ()) {
         get("1.1/account/verify_credentials.json", parameters: nil, progress: nil, success: { (task, response)  -> Void in
-            print("account: \(response)")
+            //print("account: \(response)")
             
             let userDictionary = response as! NSDictionary
             let user = User(dictionary: userDictionary)
-            
             success(user)
-            
-            print("name: \(user.name)")
-            print("screenname: \(user.screenname)")
-            print("profile url: \(user.profileUrl)")
-            print("description: \(user.tagline)")
             
         }, failure: { (task: URLSessionDataTask?, error: Error) in    /////////////////////////
             failure(error as NSError)
+        })
+    }
+    
+    func timelineTweets(count: Int, success: @escaping ([Tweet]) -> (), failure: (NSError) -> ()) {
+        get("1.1/statuses/user_timeline.json", parameters: ["count": count], progress: nil, success: { (task, response) in
+            let dictionaries = response as! [NSDictionary]
+            let tweets = Tweet.tweetsWithArray(dictionaries: dictionaries)
+            print(response)
+            success(tweets)
+        }, failure: { (task, error) in
         })
     }
     
