@@ -107,6 +107,13 @@ class TweetDetailsViewController: UIViewController {
         }
     }
     
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "replySegue" {
+            let tweetDetailsNC = segue.destination as? UINavigationController
+            let tweetVC = tweetDetailsNC?.topViewController as? ReplyViewController
+            tweetVC?.tweet = self.tweet
+        }
+    }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
